@@ -1,4 +1,5 @@
 import React, { FunctionComponent} from 'react';
+import './index.css'
 
 const Button:FunctionComponent<{
   type: string,
@@ -6,7 +7,9 @@ const Button:FunctionComponent<{
   
   
   return (
-    <div onMouseDown={onButtonDown}>{type}</div>
+    <div className='button' onMouseDown={onButtonDown}>
+      <div className='button--text'>{type}</div>
+    </div>
   )
 }
 

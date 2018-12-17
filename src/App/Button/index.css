@@ -1,0 +1,23 @@
+.button {
+  border: 1px solid rgb(45, 23, 68);
+  background: hsl(270, 50%, 31%);
+  flex-grow: 1;
+  color: white;
+  border-radius: 25px;
+  height: 100%;
+  text-align: center;
+  padding-top: 12.5px;
+  padding-bottom: 12.5px;
+  display: flex;
+  justify-content: center;
+}
+
+.button:hover {
+  background: hsl(270, 46%, 62%);
+  cursor: pointer;
+}
+
+.button--text {
+  width: 30px;
+  text-align: center;
+}
