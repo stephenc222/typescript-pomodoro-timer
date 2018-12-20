@@ -1,6 +1,5 @@
 import React, {
   FunctionComponent,
-  useEffect,
   useState
 } from 'react';
 import Button from "./Button";
@@ -9,18 +8,41 @@ import Status from "./Status";
 import Timer from './Timer'
 
 const SECOND: number = 1000
-const MINUTE: number = 60 * SECOND
+const MINUTE: number = 60 * SECOND / 60 
 const WORK_TIMER: number = MINUTE * 25 
 const BREAK_TIMER: number = MINUTE * 5 
 const LONG_BREAK_TIMER: number = MINUTE * 15  
-let intervalRef: number | NodeJS.Timeout = 0;
+
+const worker = new Worker('timeWorker.worker.js');
 
 const App:FunctionComponent = () => {
   const [timer, updateTimer] = useState(WORK_TIMER)
   const [isPaused, updatePauseButton] = useState(true)
   const [intervalNum, updateIntervalNum] = useState(1)
   const [intervalType, updateIntevalType] = useState('work')
-  
+
+  const startTimer = () => {
+    console.log('startTimer called')
+    worker.postMessage({type: 'start', timer}); // Send data to our worker.
+  }
+
+  const stopTimer = () => {
+    worker.postMessage({type: 'stop'}); // Send data to our worker.
+    console.log('stopTimer called')
+  }
+  worker.onmessage = (e) => {
+    console.log('MAIN_THREAD: Message received from worker:', e.data, { timer });
+      if (e.data.timer && e.data.timer === 0) {
+        updateStatus()
+        return
+      }
+    switch (e.data.type) {
+      case 'tick': {
+        updateTimer(e.data.timer)
+      }
+    }
+  }
+
   const onButtonChange = (
     event: React.FormEvent<HTMLDivElement>,
     type: string,
@@ -30,10 +52,12 @@ const App:FunctionComponent = () => {
     switch(type) {
       case 'pause': {
         updatePauseButton(true)
+        stopTimer()
         break
       }
       case 'start': {
         updatePauseButton(false)
+        startTimer()
         break
       }
       case 'restart': {
@@ -62,23 +86,6 @@ const App:FunctionComponent = () => {
       updateTimer(LONG_BREAK_TIMER)
     }
   }
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (!isPaused) {
-        const nextTime: number = timer - SECOND
-        if (nextTime === 0) {
-          updateStatus()
-          return
-        }
-        updateTimer(nextTime)
-      }
-    }, SECOND);
-    intervalRef = id;
-    return () => {
-      clearInterval(intervalRef as NodeJS.Timeout);
-    };
-  });
 
   const onPauseButtonDown = (event: React.FormEvent<HTMLDivElement>) => {
     updatePauseButton(!isPaused)
