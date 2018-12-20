@@ -2,8 +2,13 @@
 let timerRef = null
 let timer = 0
 
+const stopTimer = () => timerRef && clearInterval(timerRef)
+
 const startTimer = (startTime) => {
   timer = startTime
+  if (timerRef) {
+    stopTimer()
+  }
   timerRef = setInterval(() => {
     console.log('WORKER_THREAD: worker managed interval')
     if (timer <= 0) {
@@ -13,8 +18,6 @@ const startTimer = (startTime) => {
     this.postMessage({ type: 'tick', timer })
   }, 1000)
 }
-
-const stopTimer = () => timerRef && clearInterval(timerRef)
 
 this.addEventListener('message', function (e) {
   console.log('WORKER_THREAD: worker listener', e)
@@ -27,7 +30,7 @@ this.addEventListener('message', function (e) {
       return
     }
     case 'stop': {
-      console.warn('stop event')
+      console.warn('stop event', { timer })
       stopTimer()
       return
     }

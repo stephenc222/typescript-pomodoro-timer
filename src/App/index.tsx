@@ -21,24 +21,24 @@ const App:FunctionComponent = () => {
   const [intervalNum, updateIntervalNum] = useState(1)
   const [intervalType, updateIntevalType] = useState('work')
 
-  const startTimer = () => {
-    console.log('startTimer called')
-    worker.postMessage({type: 'start', timer}); // Send data to our worker.
+  const startTimer = (intervalTime = timer) => {
+    console.log('startTimer called', { timer })
+    worker.postMessage({type: 'start', timer: intervalTime}); // Send data to our worker.
   }
 
   const stopTimer = () => {
     worker.postMessage({type: 'stop'}); // Send data to our worker.
-    console.log('stopTimer called')
+    console.log('stopTimer called', { timer })
   }
-  worker.onmessage = (e) => {
-    console.log('MAIN_THREAD: Message received from worker:', e.data, { timer });
-      if (e.data.timer && e.data.timer === 0) {
+  worker.onmessage = (event) => {
+    console.log('MAIN_THREAD: Message received from worker:', event.data);
+      if (event.data.timer === 0) {
         updateStatus()
         return
       }
-    switch (e.data.type) {
+    switch (event.data.type) {
       case 'tick': {
-        updateTimer(e.data.timer)
+        updateTimer(event.data.timer)
       }
     }
   }
@@ -71,19 +71,23 @@ const App:FunctionComponent = () => {
   }
 
   const updateStatus = () => {
+    console.warn('updateStatus called', {intervalNum})
     if (intervalNum !== 4) {
       if (intervalType === 'work') {
         updateIntevalType('break')
-        updateTimer(BREAK_TIMER)
+        updateTimer(0)
+        startTimer(BREAK_TIMER + SECOND)
       } else {
         updateIntevalType('work')
-        updateTimer(WORK_TIMER)
+        updateTimer(0)
+        startTimer(WORK_TIMER + SECOND)
       }
       updateIntervalNum(intervalNum + 1)
     } else {
       updateIntervalNum(0)
       updateIntevalType('long break')
-      updateTimer(LONG_BREAK_TIMER)
+      updateTimer(0)
+      startTimer(LONG_BREAK_TIMER + SECOND)
     }
   }
 
