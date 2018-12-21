@@ -22,16 +22,13 @@ const App:FunctionComponent = () => {
   const [intervalType, updateIntevalType] = useState('work')
 
   const startTimer = (intervalTime = timer) => {
-    console.log('startTimer called', { timer })
     worker.postMessage({type: 'start', timer: intervalTime}); // Send data to our worker.
   }
 
   const stopTimer = () => {
     worker.postMessage({type: 'stop'}); // Send data to our worker.
-    console.log('stopTimer called', { timer })
   }
   worker.onmessage = (event) => {
-    console.log('MAIN_THREAD: Message received from worker:', event.data);
       if (event.data.timer === 0) {
         updateStatus()
         return
@@ -71,7 +68,6 @@ const App:FunctionComponent = () => {
   }
 
   const updateStatus = () => {
-    console.warn('updateStatus called', {intervalNum})
     if (intervalNum !== 4) {
       if (intervalType === 'work') {
         updateIntevalType('break')
@@ -81,8 +77,8 @@ const App:FunctionComponent = () => {
         updateIntevalType('work')
         updateTimer(0)
         startTimer(WORK_TIMER + SECOND)
+        updateIntervalNum(intervalNum + 1)
       }
-      updateIntervalNum(intervalNum + 1)
     } else {
       updateIntervalNum(0)
       updateIntevalType('long break')

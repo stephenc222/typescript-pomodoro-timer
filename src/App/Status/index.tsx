@@ -4,7 +4,7 @@ import './index.css'
 const Status:FunctionComponent<{intervalType: string, intervalNum: number}> = ({ intervalNum, intervalType}) => {
   return (
     <div className='status'>
-      <div>Interval: {intervalNum} of 4</div>
+      <div>{intervalNum ? `Interval: ${intervalNum} of 4`: ''}</div>
       <div>{intervalType}</div>
     </div>
   )
