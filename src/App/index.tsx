@@ -6,6 +6,8 @@ import Button from "./Button";
 import './index.css';
 import Status from "./Status";
 import Timer from './Timer'
+import timeWorker from './timeWorker.worker.js'
+import WebWorker from './WebWorker'
 
 const SECOND: number = 1000
 const MINUTE: number = 60 * SECOND / 60 
@@ -13,7 +15,8 @@ const WORK_TIMER: number = MINUTE * 25
 const BREAK_TIMER: number = MINUTE * 5 
 const LONG_BREAK_TIMER: number = MINUTE * 15  
 
-const worker = new Worker('timeWorker.worker.js');
+
+const worker: Worker = new WebWorker(timeWorker);
 
 const App:FunctionComponent = () => {
   const [timer, updateTimer] = useState(WORK_TIMER)
@@ -28,7 +31,7 @@ const App:FunctionComponent = () => {
   const stopTimer = () => {
     worker.postMessage({type: 'stop'}); // Send data to our worker.
   }
-  worker.onmessage = (event) => {
+  worker.onmessage = (event: any) => {
       if (event.data.timer === 0) {
         updateStatus()
         return
