@@ -1,5 +1,5 @@
 export default () => {
-  let timerRef
+  let timerRef = 0
   let timer = 0
 
   const stopTimer = () => timerRef && clearInterval(timerRef)
@@ -19,10 +19,8 @@ export default () => {
   }
 
   addEventListener('message', (e) => {
-    postMessage(e.data);
     switch (e.data.type) {
       case 'start': {
-        postMessage({ type: 'SUCCESS', data: 123 })
         startTimer(e.data.timer)
         return
       }

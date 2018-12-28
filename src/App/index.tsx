@@ -10,7 +10,7 @@ import timeWorker from './timeWorker.worker.js'
 import WebWorker from './WebWorker'
 
 const SECOND: number = 1000
-const MINUTE: number = 60 * SECOND / 60 
+const MINUTE: number = 60 * SECOND
 const WORK_TIMER: number = MINUTE * 25 
 const BREAK_TIMER: number = MINUTE * 5 
 const LONG_BREAK_TIMER: number = MINUTE * 15  
@@ -61,6 +61,7 @@ const App:FunctionComponent = () => {
         break
       }
       case 'restart': {
+        stopTimer()
         updateTimer(WORK_TIMER)
         break
       }
